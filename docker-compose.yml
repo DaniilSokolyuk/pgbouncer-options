@@ -1,0 +1,29 @@
+version: '3'
+services:  
+
+  db:
+    image: postgres:12
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=qwerty123
+      - POSTGRES_USER=dbuser
+      - POSTGRES_DB=test
+    command: postgres -c standard_conforming_strings=off
+
+  pgbouncer:
+    image: edoburu/pgbouncer
+    ports:
+      - "5432:5432"
+    volumes:
+      - type: bind
+        source: ./pgbouncer.ini
+        target: /etc/pgbouncer/pgbouncer.ini
+      - type: bind
+        source: ./userlist.txt
+        target: /etc/pgbouncer/userlist.txt
+    depends_on:
+      - db
+
+volumes:
+  pg_data:
